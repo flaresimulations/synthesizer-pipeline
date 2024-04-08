@@ -189,7 +189,7 @@ def get_img_smoothed(
         resolution,
         width,
         img_type="smoothed",
-        stellar_photometry="spectra_type",
+        stellar_photometry=spectra_type,
         kernel=kernel_data,
         kernel_threshold=kernel_threshold,
     )
