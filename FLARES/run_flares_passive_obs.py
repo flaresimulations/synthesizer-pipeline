@@ -174,6 +174,7 @@ def get_img_smoothed(
     kernel_data,
     kernel_threshold=1,
     age_pivot=10.0 * Myr,
+    width=60 * kpc,
 ):
     # First get the photometry for this group
     phot = get_phot(gal, grid, fc, spectra_type, age_pivot)
@@ -186,7 +187,7 @@ def get_img_smoothed(
     # Now we have the photometry we can make the ImageCollection
     gal_img = gal.get_images_flux(
         resolution,
-        gal.stars.width,
+        width,
         img_type="smoothed",
         stellar_photometry="spectra_type",
         kernel=kernel_data,
