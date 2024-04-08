@@ -427,7 +427,7 @@ if __name__ == "__main__":
         fc=fc,
         resolution=resolution,
         spectra_type=args.spectra_type,
-        kernel=kern.get_kernel(),
+        kernel=kern,
     )
     with MultiPool(args.nprocs) as pool:
         dat = pool.map(_f, gals)
