@@ -367,7 +367,7 @@ if __name__ == "__main__":
     redshift = float(args.tag.split("z")[-1].replace("p", "."))
 
     # Set up the image resolution
-    ang_resolution = (30 * mas) * arcsecond
+    ang_resolution = (30 * mas).to(arcsecond)
     ang_resolution_radians = ang_resolution.to("radian")
     _resolution = (
         ang_resolution_radians
