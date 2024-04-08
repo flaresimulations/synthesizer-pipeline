@@ -182,7 +182,7 @@ def get_img_smoothed(
         return None
 
     # Set up image
-    gal_img = ImageCollection(resolution=resolution, fov=fov)
+    gal_img = ImageCollection(resolution=resolution, fov=width)
 
     # Compute the image
     gal_img.get_imgs_smoothed(
