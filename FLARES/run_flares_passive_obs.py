@@ -14,12 +14,11 @@ from scipy.interpolate import interp1d
 from schwimmbad import MultiPool
 
 from synthesizer.grid import Grid
-from synthesizer.sed import Sed, combine_list_of_seds
 from synthesizer.filters import FilterCollection
+from synthesizer.imaging import ImageCollection
 from synthesizer.load_data.load_flares import load_FLARES
 from synthesizer.kernel_functions import Kernel
 from synthesizer.conversions import fnu_to_apparent_mag
-from synthesizer.dust.attenuation import PowerLaw
 
 
 def get_pixel_hlr(img, single_pix_area, radii_frac=0.5):
@@ -171,7 +170,7 @@ def get_img_smoothed(
     fc,
     resolution,
     spectra_type,
-    kernel_data,
+    kernel,
     kernel_threshold=1,
     age_pivot=10.0 * Myr,
     width=60 * kpc,
@@ -182,15 +181,15 @@ def get_img_smoothed(
     if phot is None:
         return None
 
-    gal.stars.particle_spectra[spectra_type].photo_fluxes = phot
+    # Set up image
+    gal_img = ImageCollection(resolution=resolution, fov=fov)
 
-    # Now we have the photometry we can make the ImageCollection
-    gal_img = gal.get_images_flux(
-        resolution,
-        width,
-        img_type="smoothed",
-        stellar_photometry=spectra_type,
-        kernel=kernel_data,
+    # Compute the image
+    gal_img.get_imgs_smoothed(
+        photometry=phot,
+        coordinates=gal.stars.centered_coordinates,
+        smoothing_lengths=gal.stars.smoothing_lengths,
+        kernel=kernel,
         kernel_threshold=kernel_threshold,
     )
 
@@ -418,6 +417,8 @@ if __name__ == "__main__":
         )
         sys.exit()
 
+    print(f"After cut number of galaxies: {len(gals)}")
+
     start = time.time()
 
     _f = partial(
@@ -426,7 +427,7 @@ if __name__ == "__main__":
         fc=fc,
         resolution=resolution,
         spectra_type=args.spectra_type,
-        kernel_data=kern.get_kernel(),
+        kernel=kern.get_kernel(),
     )
     with MultiPool(args.nprocs) as pool:
         dat = pool.map(_f, gals)
