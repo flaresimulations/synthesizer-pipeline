@@ -147,7 +147,6 @@ def get_phot(_gal, grid, fc, spectra_type, age_pivot=10.0 * Myr):
         age_pivot (float)
             split between young and old stellar populations, units Myr
     """
-
     # Skip over galaxies that have no stellar particles
     if _gal.stars.nstars == 0:
         print("There are no stars in this galaxy.")
