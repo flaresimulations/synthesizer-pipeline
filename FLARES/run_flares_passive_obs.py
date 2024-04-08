@@ -196,7 +196,7 @@ def get_img_smoothed(
     return gal_img
 
 
-def set_up_filters():
+def set_up_filters(lam):
     fs = [
         f"JWST/NIRCam.{f}"
         for f in [
@@ -223,9 +223,7 @@ def set_up_filters():
         "UV2800": {"lam_eff": 2800, "lam_fwhm": 300},
     }
 
-    fc = FilterCollection(
-        filter_codes=fs, tophat_dict=tophats, new_lam=grid.lam
-    )
+    fc = FilterCollection(filter_codes=fs, tophat_dict=tophats, new_lam=lam)
 
     return fc
 
@@ -351,7 +349,7 @@ if __name__ == "__main__":
 
     # Load the filter collection (either from SVO or disk)
     if not os.path.exists("filter_collection.hdf5"):
-        fc = set_up_filters()
+        fc = set_up_filters(grid.lam)
         fc.write_filters("filter_collection.hdf5")
 
     else:
