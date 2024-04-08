@@ -182,7 +182,7 @@ def get_img_smoothed(
     if phot is None:
         return None
 
-    gal.photo_fluxes[spectra_type] = phot
+    gal.stars.particle_spectra[spectra_type].photo_fluxes = phot
 
     # Now we have the photometry we can make the ImageCollection
     gal_img = gal.get_images_flux(
