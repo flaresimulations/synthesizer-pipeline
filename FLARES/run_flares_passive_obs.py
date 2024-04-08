@@ -187,7 +187,7 @@ def get_img_smoothed(
     # Compute the image
     gal_img.get_imgs_smoothed(
         photometry=phot,
-        coordinates=gal.stars.centered_coordinates,
+        coordinates=gal.stars.coordinates,
         smoothing_lengths=gal.stars.smoothing_lengths,
         kernel=kernel,
         kernel_threshold=kernel_threshold,
@@ -427,7 +427,7 @@ if __name__ == "__main__":
         fc=fc,
         resolution=resolution,
         spectra_type=args.spectra_type,
-        kernel=kern,
+        kernel=kern.get_kernel(),
     )
     with MultiPool(args.nprocs) as pool:
         dat = pool.map(_f, gals)
