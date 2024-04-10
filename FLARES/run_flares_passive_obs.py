@@ -75,25 +75,19 @@ def get_spectra(_gal, grid, age_pivot=10.0 * Myr):
     _gal.dust_to_metal_vijayan19()
 
     # Get young pure stellar spectra (integrated)
-    young_spec = _gal.stars.get_spectra_incident(grid, young=age_pivot)
-
-    # Get pure stellar spectra for all old star particles
-    old_spec_part = _gal.stars.get_particle_spectra_incident(
-        grid, old=age_pivot
+    young_spec = _gal.stars.get_particle_spectra_incident(
+        grid, young=age_pivot
     )
 
-    # Sum and save old and young pure stellar spectra
-    old_spec = old_spec_part.sum()
+    # Get pure stellar spectra for all old star particles
+    old_spec = _gal.stars.get_particle_spectra_incident(grid, old=age_pivot)
 
     spec["stellar"] = old_spec + young_spec
 
     # Get nebular spectra for each star particle
-    young_reprocessed_spec_part = _gal.stars.get_particle_spectra_reprocessed(
+    young_reprocessed_spec = _gal.stars.get_particle_spectra_reprocessed(
         grid, young=age_pivot
     )
-
-    # Sum and save intrinsic stellar spectra
-    young_reprocessed_spec = young_reprocessed_spec_part.sum()
 
     # Save intrinsic stellar spectra
     spec["intrinsic"] = young_reprocessed_spec + old_spec
@@ -126,12 +120,12 @@ def get_spectra(_gal, grid, age_pivot=10.0 * Myr):
     # plt.hist(np.log10(tau_v))
     # plt.show()
 
-    young_spec_attenuated = young_reprocessed_spec_part.apply_attenuation(
+    young_spec_attenuated = young_reprocessed_spec.apply_attenuation(
         tau_v=tau_v + (_gal.stars.metallicities / 0.01)
     )
-    old_spec_attenuated = old_spec_part.apply_attenuation(tau_v=tau_v)
+    old_spec_attenuated = old_spec.apply_attenuation(tau_v=tau_v)
 
-    spec["los"] = young_spec_attenuated.sum() + old_spec_attenuated.sum()
+    spec["los"] = young_spec_attenuated + old_spec_attenuated
 
     return spec
 
@@ -186,7 +180,7 @@ def get_img_smoothed(
 
     # Compute the image
     gal_img.get_imgs_smoothed(
-        photometry=phot,
+        sigal=phot,
         coordinates=gal.stars.coordinates,
         smoothing_lengths=gal.stars.smoothing_lengths,
         kernel=kernel,
