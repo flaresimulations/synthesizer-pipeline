@@ -180,7 +180,7 @@ def get_img_smoothed(
 
     # Compute the image
     gal_img.get_imgs_smoothed(
-        sigal=phot,
+        photometry=phot,
         coordinates=gal.stars.coordinates,
         smoothing_lengths=gal.stars.smoothing_lengths,
         kernel=kernel,
