@@ -179,13 +179,17 @@ def get_img_smoothed(
     gal_img = ImageCollection(resolution=resolution, fov=width)
 
     # Compute the image
-    gal_img.get_imgs_smoothed(
-        photometry=phot,
-        coordinates=gal.stars.coordinates,
-        smoothing_lengths=gal.stars.smoothing_lengths,
-        kernel=kernel,
-        kernel_threshold=kernel_threshold,
-    )
+    try:
+        gal_img.get_imgs_smoothed(
+            photometry=phot,
+            coordinates=gal.stars.coordinates,
+            smoothing_lengths=gal.stars.smoothing_lengths,
+            kernel=kernel,
+            kernel_threshold=kernel_threshold,
+        )
+    except TypeError as e:
+        print(e)
+        return None
 
     return gal_img
 
