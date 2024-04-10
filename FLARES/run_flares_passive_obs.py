@@ -181,9 +181,6 @@ def get_img_smoothed(
     if phot is None:
         return None
 
-    print(gal.stars.coordinates)
-    print(gal.stars.smoothing_lengths)
-
     # Set up image
     gal_img = ImageCollection(resolution=resolution, fov=width)
 
