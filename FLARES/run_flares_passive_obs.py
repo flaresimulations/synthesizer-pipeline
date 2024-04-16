@@ -456,6 +456,7 @@ if __name__ == "__main__":
     sizes = {f: np.zeros(len(dat)) for f in fc.filter_codes}
     for f in fc.filter_codes:
         for i in range(len(dat)):
+            print(dat[i][f].arr)
             imgs[f][i, :, :] = dat[i][f].arr
             fluxes[f][i] = np.sum(dat[i][f].arr)
             print(imgs[f][i, :, :])
