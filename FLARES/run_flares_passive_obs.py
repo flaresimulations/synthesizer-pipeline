@@ -430,6 +430,8 @@ if __name__ == "__main__":
     with MultiPool(args.nprocs) as pool:
         dat = pool.map(_f, gals)
 
+    print(dat)
+
     # Get rid of Nones (galaxies that don't have stellar particles)
     mask = np.array(dat) == None
     dat = np.array(dat)[~mask]
@@ -441,9 +443,6 @@ if __name__ == "__main__":
             args.output, args.region, args.tag, [f.filter_code for f in fc]
         )
         sys.exit()
-
-    print(dat)
-    print(dat[0])
 
     # Extract the data we'll write out
     imgs = {
