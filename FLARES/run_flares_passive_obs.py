@@ -372,13 +372,12 @@ if __name__ == "__main__":
 
     # Set up the image resolution
     ang_resolution = (30 * mas).to(arcsecond)
-    _resolution = (
+    resolution = (
         ang_resolution.value
         / Planck13.arcsec_per_kpc_proper(redshift).value
         * kpc
     )
-    resolution = (_resolution, _resolution)
-    pix_area = _resolution.value**2
+    pix_area = resolution.value**2
 
     print("Angular resolution:", ang_resolution)
     print("Resolution:", resolution)
