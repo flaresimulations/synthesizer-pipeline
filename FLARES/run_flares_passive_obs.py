@@ -372,17 +372,15 @@ if __name__ == "__main__":
 
     # Set up the image resolution
     ang_resolution = (30 * mas).to(arcsecond)
-    ang_resolution_radians = ang_resolution.to("radian")
     _resolution = (
-        ang_resolution_radians
-        * Planck13.angular_diameter_distance(redshift).to("kpc").value
+        ang_resolution.value
+        / Planck13.arcsec_per_kpc_proper(redshift).value
         * kpc
     )
     resolution = (_resolution, _resolution)
     pix_area = _resolution.value**2
 
     print("Angular resolution:", ang_resolution)
-    print("Angular resolution (radians):", ang_resolution_radians)
     print("Resolution:", resolution)
 
     print(f"Number of galaxies: {len(gals)}")
