@@ -442,6 +442,9 @@ if __name__ == "__main__":
         )
         sys.exit()
 
+    print(dat)
+    print(dat[0])
+
     # Extract the data we'll write out
     imgs = {
         f: np.zeros(
