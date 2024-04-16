@@ -191,7 +191,13 @@ def get_img_smoothed(
         print(e)
         return None
 
-    print(gal_img.resolution, gal_img.npix, gal_img.fov, gal_img.filter_codes)
+    print(
+        gal_img.resolution,
+        gal_img.npix,
+        gal_img.fov,
+        width,
+        gal_img.filter_codes,
+    )
 
     return gal_img
 
@@ -374,6 +380,10 @@ if __name__ == "__main__":
     )
     resolution = (_resolution, _resolution)
     pix_area = _resolution.value**2
+
+    print("Angular resolution:", ang_resolution)
+    print("Angular resolution (radians):", ang_resolution_radians)
+    print("Resolution:", resolution)
 
     print(f"Number of galaxies: {len(gals)}")
 
