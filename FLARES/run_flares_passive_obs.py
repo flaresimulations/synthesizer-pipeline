@@ -191,7 +191,7 @@ def get_img_smoothed(
         print(e)
         return None
 
-    print(gal_img.resolution, gal_img.npix, gal_img.filter_codes)
+    print(gal_img.resolution, gal_img.npix, gal_img.fov, gal_img.filter_codes)
 
     return gal_img
 
