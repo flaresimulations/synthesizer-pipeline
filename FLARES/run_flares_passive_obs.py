@@ -430,11 +430,8 @@ if __name__ == "__main__":
     with MultiPool(args.nprocs) as pool:
         dat = pool.map(_f, gals)
 
-    print(dat)
-
     # Get rid of Nones (galaxies that don't have stellar particles)
-    mask = np.array(dat) == None
-    dat = np.array(dat)[~mask]
+    dat = [ic for ic in dat if ic is not None]
 
     # If there are no galaxies in this snap, create dummy file
     if len(dat) == 0:
