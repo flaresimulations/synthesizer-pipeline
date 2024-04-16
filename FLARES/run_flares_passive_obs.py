@@ -7,7 +7,7 @@ from functools import partial
 import sys
 
 import matplotlib.pyplot as plt
-from unyt import Myr, mas, arcsecond, kpc, Msun, nJy
+from unyt import Myr, mas, arcsecond, kpc, Msun, nJy, unyt_array
 from astropy.cosmology import Planck13
 from scipy.interpolate import interp1d
 
@@ -176,7 +176,10 @@ def get_img_smoothed(
         return None
 
     # Set up image
-    gal_img = ImageCollection(resolution=resolution, fov=width)
+    gal_img = ImageCollection(
+        resolution=resolution,
+        fov=unyt_array([width.value, width.value], units=kpc),
+    )
 
     # Compute the image
     try:
