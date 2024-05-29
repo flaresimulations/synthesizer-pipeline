@@ -227,7 +227,7 @@ def get_spectra(
 
             spec["los"] = reproc_spec_part.apply_attenuation(
                 tau_v = tau_v + kappa_BC * (_gal.stars.metallicities / Znorm)
-            )
+            ).sum()
 
     return spec, _gal
 
@@ -282,7 +282,7 @@ def get_lines(
     if 'intrinsic' in line_keys:
         line['intrinsic'] = _gal.stars.get_line_intrinsic(
         grid, line_ids=line_list
-        )
+        ).sum()
     
     # Dust attenuated spectra following LOS model from
     # FLARES-II paper
@@ -293,7 +293,7 @@ def get_lines(
             else:
                 line['los'] =  _gal.stars.get_particle_line_intrinsic(
                     grid, line_ids=line_list
-                )
+                ).sum()
         else:
             # LOS model (Vijayan+21)
             
@@ -308,7 +308,7 @@ def get_lines(
                     line_ids=line_list,
                     tau_v_nebular=_gal.stars.tau_v + tau_v_BC,
                     tau_v_stellar=_gal.stars.tau_v,
-                )  
+                ).sum()  
             else:
                 # Calculate DTM using Vijayan+19 Lgal SAM
                 _gal.dust_to_metal_vijayan19()
@@ -322,6 +322,6 @@ def get_lines(
                     line_ids=line_list,
                     tau_v_nebular=tau_v + tau_v_BC,
                     tau_v_stellar=tau_v,
-                )  
+                ).sum()  
     
     return line
