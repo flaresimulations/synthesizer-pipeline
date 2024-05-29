@@ -13,13 +13,13 @@ import h5py
 from mpi4py import MPI
 from astropy.cosmology import LambdaCDM
 from schwimmbad import MultiPool
-from unyt import Angstrom, erg, s, Hz
+from unyt import Angstrom, erg, s
 
 from synthesizer.load_data.load_eagle import read_array, get_age
 from synthesizer.grid import Grid
 from synthesizer.filters import FilterCollection
 from synthesizer.kernel_functions import Kernel
-from synthesizer.sed import Sed, combine_list_of_seds
+from synthesizer.sed import Sed
 from synthesizer.load_data.load_eagle import load_EAGLE_shm
 from synthesizer.load_data.utils import get_len
 
@@ -460,7 +460,6 @@ def generate_and_save_photometry(
         dat = np.array(dat, dtype=object)
         dat[nostars] = null_dict
 
-    lam = dat[0][spec_keys[0]].wavelength
     specs: Dict = {}
     for key in spec_keys:
         specs[key] = Sed(grid.lam, np.array([_dat[key].lnu for _dat in dat]))
