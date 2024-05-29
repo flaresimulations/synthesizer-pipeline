@@ -172,6 +172,17 @@ def create_eagle_shm(
         "PARTDATA",
         args.eagle_file,
         args.tag,
+        "/PartType4/SmoothingLength",
+        noH=True,
+        physicalUnits=True,
+        numThreads=nthreads
+    ).astype(np.float32)  # physical Mpc
+    create_shm_nparray(tmp, F'{args.shm_prefix}s_hsml{args.shm_suffix}')
+
+    tmp = read_array(
+        "PARTDATA",
+        args.eagle_file,
+        args.tag,
         "/PartType4/ElementAbundance/Oxygen",
         numThreads=nthreads
     ).astype(np.float32)
