@@ -13,7 +13,7 @@ import h5py
 from mpi4py import MPI
 from astropy.cosmology import LambdaCDM
 from schwimmbad import MultiPool
-from unyt import Angstrom, erg, s
+from unyt import Angstrom, erg, s, Hz
 
 from synthesizer.load_data.load_eagle import read_array, get_age
 from synthesizer.grid import Grid
@@ -388,7 +388,7 @@ def generate_and_save_photometry(
         tot_chunks=tot_chunks)
 
     start = time.time()
-    with MultiPool(processes=4*args.nthreads) as pool:
+    with MultiPool(processes=args.nthreads) as pool:
         gals_chunks = np.array(pool.map(_f, chunks), dtype=object)
     end = time.time()
 
@@ -434,8 +434,6 @@ def generate_and_save_photometry(
     gals_chunks = np.array(dat[:,1], dtype=object)
     dat = list(dat[:,0])
     gc.collect()
-    end = time.time()
-    print(f"Spectra generation on rank {rank} took: {end - start:.2f}")
 
     # # galaxies that don't have stellar particles
     mask = np.array(dat) == {}
@@ -451,18 +449,24 @@ def generate_and_save_photometry(
             )
         return None
 
-    # Remove galaxies with zero stars
-    gals_chunks = gals_chunks[~mask]
-    # Assign null SEDs to galaxies with no stars
-    ok = np.where(mask)[0]
-    null_sed = Sed(lam=dat[np.where(~mask)[0][0]]['stellar'].wavelength)
-    null_dict = {ii: null_sed for ii in spec_keys}
-    dat = np.array(dat, dtype=object)
-    dat[ok] = null_dict
+    if np.sum(mask)>0:
+        ok = np.where(~mask)[0]
+        gals_chunks = gals_chunks[ok]
+    
+        # Assign null SEDs to galaxies with no stars
+        nostars = np.where(mask)[0]
+        null_sed = Sed(lam=grid.lam)
+        null_dict = {ii: null_sed for ii in spec_keys}
+        dat = np.array(dat, dtype=object)
+        dat[nostars] = null_dict
 
+    lam = dat[0][spec_keys[0]].wavelength
     specs: Dict = {}
     for key in spec_keys:
-        specs[key] = combine_list_of_seds([_dat[key] for _dat in dat])
+        specs[key] = Sed(grid.lam, np.array([_dat[key].lnu for _dat in dat]))
+
+    end = time.time()
+    print(f"Spectra generation on rank {rank} took: {end - start:.2f}")
 
     # Calculate photometry (observer frame fluxes and luminosities)
     fluxes: Dict = {}
@@ -470,9 +474,11 @@ def generate_and_save_photometry(
 
     start = time.time()
     for key in spec_keys:
-        specs[key].get_fnu(cosmo=cosmo, z=gals_chunks[0].redshift)
-        fluxes[key] = specs[key].get_photo_fluxes(fc_flux, verbose=False)
+        specs[key].get_fnu(cosmo=cosmo,
+                           z=float(args.tag[5:].replace("p", ".")))
         luminosities[key] = specs[key].get_photo_luminosities(fc_lum, verbose=False)
+        fluxes[key] = specs[key].get_photo_fluxes(fc_flux, verbose=False)
+        
 
     del specs, dat
     gc.collect()
@@ -494,6 +500,7 @@ def generate_and_save_photometry(
         line_list=line_list,
         kern=kern
         )
+
     with MultiPool(processes=args.nthreads) as pool:
         dat = pool.map(_f, gals_chunks)
 
@@ -504,8 +511,8 @@ def generate_and_save_photometry(
     ok = np.where(~mask)[0]
     for ii, key in enumerate(line_keys):
         for jj, _line in enumerate(line_list):
-            tmp_lum[:,jj][ok] = np.array([np.sum(kk[key][_line]._luminosity) for kk in dat])
-            tmp_ew[:,jj][ok] = np.array([np.sum(kk[key][_line]._equivalent_width) for kk in dat])
+            tmp_lum[:,jj][ok] = np.array([kk[key][_line]._luminosity for kk in dat])
+            tmp_ew[:,jj][ok] = np.array([kk[key][_line]._equivalent_width for kk in dat])
 
         lines_lum[key] = tmp_lum
         lines_ew[key] = tmp_ew
@@ -651,7 +658,6 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    output_file = F"{args.output}_{args.volume}_{args.tag}"
 
     spec_keys: List = ['stellar', 'intrinsic', 'los']
     line_list: List = ['H 1 6562.80A', 'H 1 4861.32A', 'H 1 4340.46A',
