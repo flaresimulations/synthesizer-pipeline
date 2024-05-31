@@ -1,3 +1,11 @@
+"""
+Script for generating spectra, photometry and line emission
+for the EAGLE simulations.
+
+For a shared memory version of this script please use
+`run_eagle_spectra_shm.py`
+"""
+
 import os
 import gc
 import argparse
