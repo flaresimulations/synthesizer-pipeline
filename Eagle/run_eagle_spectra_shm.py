@@ -1,3 +1,10 @@
+"""
+Shared memory script for generating spectra, photometry and
+line emission for the EAGLE simulations.
+
+For a distributed memory version of this script please use
+`run_eagle_spectra.py`
+"""
 import os
 import time
 import gc
